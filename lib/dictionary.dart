@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'detail_screen.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class DictionaryScreen extends StatefulWidget {
   const DictionaryScreen({Key? key}) : super(key: key);
@@ -30,12 +30,11 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
     });
 
     try {
-      final englishResponse = await http.get(Uri.parse('http://10.0.2.2:8000/english'));
-      final vietnameseResponse = await http.get(Uri.parse('http://10.0.2.2:8000/vietnamese'));
+      final englishString = await rootBundle.loadString('assets/english_data.json');
+      final vietnameseString = await rootBundle.loadString('assets/vietnamese_data.json');
 
-      if (englishResponse.statusCode == 200 && vietnameseResponse.statusCode == 200) {
-        final englishJsonList = jsonDecode(englishResponse.body) as List<dynamic>;
-        final vietnameseJsonList = jsonDecode(vietnameseResponse.body) as List<dynamic>;
+        final englishJsonList = jsonDecode(englishString) as List<dynamic>;
+        final vietnameseJsonList = jsonDecode(vietnameseString) as List<dynamic>;
 
         final englishEntriesList = englishJsonList
             .map((json) => DictionaryEntry.fromJson(json as Map<String, dynamic>))
@@ -49,19 +48,13 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
           vietnameseEntries = vietnameseEntriesList;
           isLoading = false;
         });
-      } else {
+      } catch (e) {
         setState(() {
           errorMessage = 'Failed to load dictionary';
           isLoading = false;
         });
       }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Error loading dictionary: $e';
-        isLoading = false;
-      });
     }
-  }
 
   void toggleLanguage() {
     setState(() {

@@ -64,9 +64,11 @@ class _TranslatorPageState extends State<TranslatorPage> {
   }
 
   void _switchLanguages() {
-    final String tempLanguage = fromLanguage;
-    fromLanguage = toLanguage;
-    toLanguage = tempLanguage;
+    setState(() {
+      final String tempLanguage = fromLanguage;
+      fromLanguage = toLanguage;
+      toLanguage = tempLanguage;
+    });
     _translateText(_controller.text);
   }
 
